@@ -18,9 +18,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  MARP_SOURCE: outputs/modern-development-feedback-loops.marp.md
-  PDF_OUTPUT: dist/modern-development-feedback-loops.pdf
-  HTML_OUTPUT: dist/index.html
+  PRESENTATION_GLOB: "*.marp.md"
 
 jobs:
   build:
@@ -35,28 +33,85 @@ jobs:
         run: |
           mkdir -p dist
           chmod 777 dist
-          docker run --rm \
-            -v "$PWD:/work" \
-            -w /work \
-            marpteam/marp-cli \
-            "$MARP_SOURCE" \
-            --html \
-            --allow-local-files \
-            --output "$HTML_OUTPUT"
-          docker run --rm \
-            -v "$PWD:/work" \
-            -w /work \
-            marpteam/marp-cli \
-            "$MARP_SOURCE" \
-            --pdf \
-            --allow-local-files \
-            --output "$PDF_OUTPUT"
+
+          mapfile -t presentations < <(find . \
+            -path ./dist -prune -o \
+            -path ./work -prune -o \
+            -path ./.git -prune -o \
+            -name "$PRESENTATION_GLOB" \
+            -type f \
+            -print | sort)
+
+          if [ "${#presentations[@]}" -eq 0 ]; then
+            echo "No Marp presentations found matching $PRESENTATION_GLOB"
+            exit 1
+          fi
+
+          cat > dist/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Brown Bag Presentations</title>
+            <style>
+              body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 3rem; max-width: 860px; line-height: 1.5; }
+              h1 { color: #003e53; }
+              li { margin: 0.8rem 0; }
+              a { color: #0087a9; font-weight: 650; }
+              .pdf { margin-left: 0.75rem; color: #d3002d; }
+            </style>
+          </head>
+          <body>
+            <h1>Brown Bag Presentations</h1>
+            <ul>
+          HTML
+
+          for source in "${presentations[@]}"; do
+            source="${source#./}"
+            slug="$(basename "$source" .marp.md)"
+            html_dir="dist/$slug"
+            pdf_dir="dist/pdfs"
+            mkdir -p "$html_dir" "$pdf_dir"
+            chmod 777 "$html_dir" "$pdf_dir"
+
+            docker run --rm \
+              -v "$PWD:/work" \
+              -w /work \
+              marpteam/marp-cli \
+              "$source" \
+              --html \
+              --allow-local-files \
+              --output "$html_dir/index.html"
+
+            docker run --rm \
+              -v "$PWD:/work" \
+              -w /work \
+              marpteam/marp-cli \
+              "$source" \
+              --pdf \
+              --allow-local-files \
+              --output "$pdf_dir/$slug.pdf"
+
+            title="$(grep -m 1 '^# ' "$source" | sed 's/^# //')"
+            if [ -z "$title" ]; then
+              title="$slug"
+            fi
+
+            printf '              <li><a href="%s/">%s</a><a class="pdf" href="pdfs/%s.pdf">PDF</a></li>\n' "$slug" "$title" "$slug" >> dist/index.html
+          done
+
+          cat >> dist/index.html <<'HTML'
+            </ul>
+          </body>
+          </html>
+          HTML
 
       - name: Upload PDF build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: modern-development-feedback-loops-pdf
-          path: ${{ env.PDF_OUTPUT }}
+          name: presentation-pdfs
+          path: dist/pdfs/*.pdf
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -87,10 +142,10 @@ jobs:
       - name: Download PDF artifact
         uses: actions/download-artifact@v4
         with:
-          name: modern-development-feedback-loops-pdf
+          name: presentation-pdfs
           path: release-artifacts
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: release-artifacts/modern-development-feedback-loops.pdf
+          files: release-artifacts/*.pdf
