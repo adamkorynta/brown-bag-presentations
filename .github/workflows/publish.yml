@@ -34,6 +34,7 @@ jobs:
       - name: Build presentation
         run: |
           mkdir -p dist
+          chmod 777 dist
           docker run --rm \
             -v "$PWD:/work" \
             -w /work \
