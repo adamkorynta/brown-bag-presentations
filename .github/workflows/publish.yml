@@ -1,0 +1,95 @@
+name: Publish Marp Presentation
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  MARP_SOURCE: outputs/modern-development-feedback-loops.marp.md
+  PDF_OUTPUT: dist/modern-development-feedback-loops.pdf
+  HTML_OUTPUT: dist/index.html
+
+jobs:
+  build:
+    name: Build HTML and PDF
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build presentation
+        run: |
+          mkdir -p dist
+          docker run --rm \
+            -v "$PWD:/work" \
+            -w /work \
+            marpteam/marp-cli \
+            "$MARP_SOURCE" \
+            --html \
+            --allow-local-files \
+            --output "$HTML_OUTPUT"
+          docker run --rm \
+            -v "$PWD:/work" \
+            -w /work \
+            marpteam/marp-cli \
+            "$MARP_SOURCE" \
+            --pdf \
+            --allow-local-files \
+            --output "$PDF_OUTPUT"
+
+      - name: Upload PDF build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: modern-development-feedback-loops-pdf
+          path: ${{ env.PDF_OUTPUT }}
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy-pages:
+    name: Deploy GitHub Pages
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  release:
+    name: Attach PDF to Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download PDF artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: modern-development-feedback-loops-pdf
+          path: release-artifacts
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-artifacts/modern-development-feedback-loops.pdf
