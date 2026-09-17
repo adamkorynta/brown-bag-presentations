@@ -299,24 +299,19 @@ Sources: Anthropic describes Skills as directories with instructions, scripts, a
 ```text
 my-skill/
   SKILL.md
+    front matter:
+      name: my-skill
+      description: Use when...
+    instructions:
+      1. Inspect the inputs.
+      2. Read needed references.
+      3. Run the validator.
   references/
     decision-rules.md
   scripts/
     validate-inputs.js
   templates/
     report.md
-```
-
-```text
-SKILL.md
-  front matter:
-    name: my-skill
-    description: Use when...
-
-  instructions:
-    1. Inspect the inputs.
-    2. Read only the needed references.
-    3. Run the validator.
 ```
 
   </div>
