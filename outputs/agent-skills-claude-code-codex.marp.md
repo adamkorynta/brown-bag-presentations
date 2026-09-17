@@ -127,6 +127,20 @@ pre code {
   letter-spacing: 1.4px;
 }
 
+.slide-source {
+  position: absolute;
+  left: 82px;
+  bottom: 64px;
+  color: var(--gei-gray);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.slide-source a {
+  color: var(--gei-blue);
+  font-weight: 700;
+}
+
 .split {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -334,7 +348,7 @@ Sources: Anthropic Agent Skills overview, https://platform.claude.com/docs/en/ag
 <div class="three-col">
   <div class="panel">
     <h3>Front matter</h3>
-    <p><code>name</code> and <code>description</code> identify the skill and tell the agent when to load it. Some runtimes add fields for tool restrictions or invocation behavior.</p>
+    <p><code>name</code> and <code>description</code> identify the skill and tell the agent when to load it. Optional fields cover licensing, compatibility, metadata, and experimental tool restrictions.</p>
   </div>
   <div class="panel olive">
     <h3>Directory structure</h3>
@@ -348,10 +362,12 @@ Sources: Anthropic Agent Skills overview, https://platform.claude.com/docs/en/ag
 
 <div class="callout" style="margin-top: 30px;">The best skills keep the always-loaded part small and move detail into referenced files.</div>
 
+<div class="slide-source">Open specification: <a href="https://agentskills.io/specification">agentskills.io/specification</a></div>
+
 <!--
 Speaker notes:
 Anthropic documents this as three levels: metadata always loaded, instructions loaded when the skill triggers, and resources or scripts loaded as needed. This is also the pattern Codex skills follow in practice: the description routes the work, and the body points to the files that matter.
-Sources: Anthropic Agent Skills overview, https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview. Claude Code plugin docs, https://code.claude.com/docs/en/plugins.
+Sources: Agent Skills open specification, https://agentskills.io/specification. Anthropic Agent Skills overview, https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview. Claude Code plugin docs, https://code.claude.com/docs/en/plugins.
 -->
 
 ---
