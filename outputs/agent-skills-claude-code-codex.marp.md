@@ -197,39 +197,52 @@ pre code {
 .compact h2 { font-size: 36px; margin-bottom: 20px; }
 .compact h3 { font-size: 24px; margin-bottom: 8px; }
 
-.tag-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+.knowledge-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin-top: 4px;
 }
 
-.tag {
-  min-height: 124px;
-  display: block;
-  background: #f5f6f2;
-  border-top: 7px solid var(--gei-blue);
-  padding: 14px 16px;
-}
-
-.tag strong {
-  display: block;
+.knowledge-table th {
   color: var(--gei-teal);
-  font-size: 21px;
+  font-size: 18px;
   line-height: 1.08;
-  margin-bottom: 8px;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 4px solid var(--gei-teal);
 }
 
-.tag span {
-  display: block;
+.knowledge-table td {
   color: var(--gei-deep);
   font-size: 18px;
-  font-weight: 400;
-  line-height: 1.16;
+  line-height: 1.18;
+  vertical-align: top;
+  padding: 14px 12px;
+  border-bottom: 1px solid #d7d9d5;
 }
 
-.tag:nth-child(2) { border-top-color: var(--gei-olive); }
-.tag:nth-child(3) { border-top-color: var(--gei-gold); }
-.tag:nth-child(4) { border-top-color: var(--gei-red); }
+.knowledge-table th:nth-child(1) { width: 13%; }
+.knowledge-table th:nth-child(2) { width: 18%; }
+.knowledge-table th:nth-child(3) { width: 29%; }
+.knowledge-table th:nth-child(4) { width: 40%; }
+
+.knowledge-table td:first-child {
+  color: var(--gei-teal);
+  font-weight: 800;
+  border-left: 8px solid var(--gei-blue);
+}
+
+.knowledge-table tr:nth-child(2) td:first-child { border-left-color: var(--gei-olive); }
+.knowledge-table tr:nth-child(3) td:first-child { border-left-color: var(--gei-red); }
+.knowledge-table tr:nth-child(4) td:first-child { border-left-color: var(--gei-gold); }
+
+.knowledge-table tbody tr:last-child td { border-bottom: 0; }
+
+.knowledge-table .example {
+  color: var(--gei-gray);
+  font-style: italic;
+}
 
 .compare {
   display: grid;
@@ -452,30 +465,46 @@ Source: OpenAI model guidance notes that models can be sensitive to instructions
 
 ## How Agent Knowledge Works
 
-<div class="tag-grid">
-  <div class="tag">
-    <strong>MCP provides tool access</strong>
-    <span>Connects the agent to live systems through callable tools. Best for actions and current data.</span>
-  </div>
-  <div class="tag">
-    <strong>RAG provides factual knowledge</strong>
-    <span>Retrieves selected sources into the active context. Best for changing, private, or cited facts.</span>
-  </div>
-  <div class="tag">
-    <strong>Fine tuning shapes model behavior</strong>
-    <span>Changes learned response patterns using examples. Best for stable behavior, style, or task specialization.</span>
-  </div>
-  <div class="tag">
-    <strong>Skills provide procedural knowledge</strong>
-    <span>Loads task-specific instructions with scripts and templates. Best for repeatable procedures and decision rules.</span>
-  </div>
-</div>
-
-<div class="callout" style="margin-top: 24px;">Pick the mechanism based on what the agent lacks: access, facts, learned behavior, or procedure.</div>
+<table class="knowledge-table">
+  <thead>
+    <tr>
+      <th>Mechanism</th>
+      <th>Think of it as</th>
+      <th>What changes?</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>MCP</td>
+      <td>Hands / connections</td>
+      <td>What systems the agent can interact with</td>
+      <td class="example">&ldquo;Query Jira for the current issue.&rdquo;</td>
+    </tr>
+    <tr>
+      <td>RAG</td>
+      <td>Reference library</td>
+      <td>Information placed into context for this request</td>
+      <td class="example">&ldquo;Search our proposal-development guide and tell me the required review process.&rdquo;</td>
+    </tr>
+    <tr>
+      <td>Skills</td>
+      <td>Playbook</td>
+      <td>Instructions loaded for performing a task</td>
+      <td class="example">&ldquo;When developing a proposal, follow these 8 steps and use these templates.&rdquo;</td>
+    </tr>
+    <tr>
+      <td>Fine-tuning</td>
+      <td>Training / instincts</td>
+      <td>The model's weights and learned response patterns</td>
+      <td class="example">&ldquo;After seeing thousands of examples, produce proposals in our preferred structure naturally.&rdquo;</td>
+    </tr>
+  </tbody>
+</table>
 
 <!--
 Speaker notes:
-Use this as the mental model slide. MCP connects the agent to systems and tools. RAG retrieves factual context at run time. Fine tuning changes how the model behaves statistically. Skills encode how to do a kind of work, including when to fetch references or run scripts.
+Use this as the mental model slide. MCP changes what the agent can reach. RAG changes the information available in the current context. Skills load a task-specific procedure. Fine-tuning changes learned response patterns in the model weights. These mechanisms can work together in one agent workflow.
 Sources: Anthropic plugin docs list MCP servers as plugin components alongside skills. OpenAI Developers describes plugins as extending ChatGPT and Codex with skills, MCP servers, and optional UI.
 -->
 
