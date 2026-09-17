@@ -34,6 +34,10 @@ jobs:
           mkdir -p dist
           chmod 777 dist
 
+          if [ -d architecture ]; then
+            cp -R architecture dist/architecture
+          fi
+
           mapfile -t presentations < <(find . \
             -path ./dist -prune -o \
             -path ./work -prune -o \
@@ -100,6 +104,24 @@ jobs:
 
             printf '              <li><a href="%s/">%s</a><a class="pdf" href="pdfs/%s.pdf">PDF</a></li>\n' "$slug" "$title" "$slug" >> dist/index.html
           done
+
+          if compgen -G "architecture/*.html" > /dev/null; then
+            cat >> dist/index.html <<'HTML'
+            </ul>
+            <h2>Interactive architecture diagrams</h2>
+            <ul>
+          HTML
+
+            for diagram in architecture/*.html; do
+              filename="$(basename "$diagram")"
+              title="$(grep -m 1 '<title>' "$diagram" | sed -E 's/.*<title>(.*)<\/title>.*/\1/')"
+              if [ -z "$title" ]; then
+                title="${filename%.html}"
+              fi
+
+              printf '              <li><a href="architecture/%s">%s</a></li>\n' "$filename" "$title" >> dist/index.html
+            done
+          fi
 
           cat >> dist/index.html <<'HTML'
             </ul>
