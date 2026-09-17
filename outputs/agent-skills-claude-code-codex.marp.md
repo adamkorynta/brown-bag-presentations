@@ -190,16 +190,27 @@ pre code {
 }
 
 .tag {
-  min-height: 64px;
-  display: flex;
-  align-items: center;
+  min-height: 124px;
+  display: block;
   background: #f5f6f2;
   border-top: 7px solid var(--gei-blue);
+  padding: 14px 16px;
+}
+
+.tag strong {
+  display: block;
   color: var(--gei-teal);
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 21px;
   line-height: 1.08;
-  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+
+.tag span {
+  display: block;
+  color: var(--gei-deep);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.16;
 }
 
 .tag:nth-child(2) { border-top-color: var(--gei-olive); }
@@ -431,13 +442,25 @@ Source: OpenAI model guidance notes that models can be sensitive to instructions
 ## How Agent Knowledge Works
 
 <div class="tag-grid">
-  <div class="tag">MCP gives the agent tool access</div>
-  <div class="tag">RAG gives the agent factual knowledge</div>
-  <div class="tag">Fine tuning changes model behavior in the weights</div>
-  <div class="tag">Skills give the agent procedural knowledge</div>
+  <div class="tag">
+    <strong>MCP provides tool access</strong>
+    <span>Connects the agent to live systems through callable tools. Best for actions and current data.</span>
+  </div>
+  <div class="tag">
+    <strong>RAG provides factual knowledge</strong>
+    <span>Retrieves selected sources into the active context. Best for changing, private, or cited facts.</span>
+  </div>
+  <div class="tag">
+    <strong>Fine tuning shapes model behavior</strong>
+    <span>Changes learned response patterns using examples. Best for stable behavior, style, or task specialization.</span>
+  </div>
+  <div class="tag">
+    <strong>Skills provide procedural knowledge</strong>
+    <span>Loads task-specific instructions with scripts and templates. Best for repeatable procedures and decision rules.</span>
+  </div>
 </div>
 
-<div class="callout" style="margin-top: 34px;">Pick the mechanism based on what the agent lacks: access, facts, learned behavior, or procedure.</div>
+<div class="callout" style="margin-top: 24px;">Pick the mechanism based on what the agent lacks: access, facts, learned behavior, or procedure.</div>
 
 <!--
 Speaker notes:
