@@ -479,7 +479,7 @@ Source: OpenAI model guidance notes that models can be sensitive to instructions
       <td>MCP</td>
       <td>Hands / connections</td>
       <td>What systems the agent can interact with</td>
-      <td class="example">&ldquo;Query Jira for the current issue.&rdquo;</td>
+      <td class="example">&ldquo;Create Jira tasks for each proposal section and assign them to the responsible authors.&rdquo;</td>
     </tr>
     <tr>
       <td>RAG</td>
