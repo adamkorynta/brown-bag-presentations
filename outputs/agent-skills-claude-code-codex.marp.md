@@ -404,18 +404,18 @@ Sources: Agent Skills open specification, https://agentskills.io/specification. 
   <div class="panel olive">
     <h3>Codex and OpenAI agents</h3>
     <ul>
-      <li>Personal Codex skills under <code>$CODEX_HOME/skills</code></li>
+      <li>Repository: <code>.agents/skills/</code>; personal: <code>$HOME/.agents/skills/</code></li>
+      <li>Admin: <code>/etc/codex/skills</code>; system skills bundled with Codex</li>
       <li>Plugin-bundled skills loaded with installed Codex plugins</li>
-      <li>OpenAI API skills uploaded as files or zip archives</li>
-      <li>Hosted agent environments can reference skill IDs or inline skill archives</li>
+      <li>OpenAI API: upload files or zip archives; hosted environments use skill IDs or inline archives</li>
     </ul>
   </div>
 </div>
 
 <!--
 Speaker notes:
-For Claude Code, the documented filesystem paths are personal ~/.claude/skills and project .claude/skills, plus plugin skills. For Codex, the local app loads personal and plugin-provided skills, while the OpenAI API exposes first-class skill creation, versions, and hosted environment attachment.
-Sources: Anthropic Agent Skills overview, https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview. Claude Code plugin docs, https://code.claude.com/docs/en/plugins. OpenAI Skills API, https://developers.openai.com/api/reference/python/resources/skills/methods/create. OpenAI hosted environment template API, https://developers.openai.com/api/reference/go/resources/beta/subresources/agents/subresources/environments/subresources/templates/methods/create.
+For Claude Code, the documented filesystem paths are personal ~/.claude/skills and project .claude/skills, plus plugin skills. Codex discovers repository skills from .agents/skills between the working directory and repository root, personal skills from $HOME/.agents/skills, admin skills from /etc/codex/skills, and bundled system skills. The OpenAI API also exposes skill uploads and hosted environment attachment.
+Sources: Claude Code skills, https://code.claude.com/docs/en/skills. Claude Code plugin docs, https://code.claude.com/docs/en/plugins. OpenAI skill guide, https://learn.chatgpt.com/docs/build-skills. OpenAI Skills API, https://developers.openai.com/api/reference/resources/skills/methods/create.
 -->
 
 ---
@@ -438,9 +438,9 @@ Sources: Anthropic Agent Skills overview, https://platform.claude.com/docs/en/ag
     </ul>
   </div>
   <div class="panel olive">
-    <h3>Use a skill for reusable procedures</h3>
+    <h3>Use a skill for on-demand procedures</h3>
     <ul>
-      <li>Workflows that travel across repos</li>
+      <li>Repository-specific or cross-repository workflows</li>
       <li>Steps with supporting references or templates</li>
       <li>Processes that benefit from scripts</li>
       <li>Instructions that should trigger only for specific tasks</li>
@@ -449,12 +449,12 @@ Sources: Anthropic Agent Skills overview, https://platform.claude.com/docs/en/ag
   </div>
 </div>
 
-<div class="callout" style="margin-top: 24px;">A good rule: repo context goes in <code>AGENTS.md</code>; repeatable know-how becomes a skill.</div>
+<div class="callout" style="margin-top: 24px;">A good rule: standing repo context goes in <code>AGENTS.md</code>; a task-specific, repeatable procedure becomes a skill.</div>
 
 <!--
 Speaker notes:
-Make this decision feel concrete. AGENTS.md is the standing orientation for a repository. Skills are task-triggered capabilities. If the same process would help in three repositories, it probably wants to become a skill.
-Source: OpenAI model guidance notes that models can be sensitive to instructions contained in skills and AGENTS.md, and recommends auditing files that influence model behavior: https://developers.openai.com/api/docs/guides/latest-model.
+Make this decision feel concrete. AGENTS.md is standing orientation loaded for work in its scope. Skills are task-triggered capabilities and can be either repository-specific or portable. If a block of AGENTS.md has become a substantial procedure that only some tasks need, it probably wants to become a skill.
+Sources: OpenAI AGENTS.md guide, https://learn.chatgpt.com/docs/agent-configuration/agents-md. OpenAI skill guide, https://learn.chatgpt.com/docs/build-skills. Claude Code skills, https://code.claude.com/docs/en/skills.
 -->
 
 ---
@@ -497,7 +497,7 @@ Source: OpenAI model guidance notes that models can be sensitive to instructions
       <td>Fine-tuning</td>
       <td>Training / instincts</td>
       <td>The model's weights and learned response patterns</td>
-      <td class="example">&ldquo;After seeing thousands of examples, produce proposals in our preferred structure naturally.&rdquo;</td>
+      <td class="example">&ldquo;After training on curated examples, produce proposals in our preferred structure more reliably.&rdquo;</td>
     </tr>
   </tbody>
 </table>
@@ -505,7 +505,7 @@ Source: OpenAI model guidance notes that models can be sensitive to instructions
 <!--
 Speaker notes:
 Use this as the mental model slide. MCP changes what the agent can reach. RAG changes the information available in the current context. Skills load a task-specific procedure. Fine-tuning changes learned response patterns in the model weights. These mechanisms can work together in one agent workflow.
-Sources: Anthropic plugin docs list MCP servers as plugin components alongside skills. OpenAI Developers describes plugins as extending ChatGPT and Codex with skills, MCP servers, and optional UI.
+Sources: Anthropic plugin docs list MCP servers as plugin components alongside skills. OpenAI skill guide, https://learn.chatgpt.com/docs/build-skills. OpenAI supervised fine-tuning guide, https://developers.openai.com/api/docs/guides/supervised-fine-tuning.
 -->
 
 ---
@@ -524,18 +524,18 @@ Sources: Anthropic plugin docs list MCP servers as plugin components alongside s
   <div class="panel">
     <h3>Three useful types</h3>
     <ul>
-      <li><strong>Semantic memory:</strong> durable facts retrieved through RAG or a memory store.</li>
-      <li><strong>Episodic memory:</strong> conversation history, task logs, decisions, and prior attempts.</li>
-      <li><strong>Procedural memory:</strong> skills that preserve how to perform a repeatable process.</li>
+      <li><strong>Semantic memory:</strong> stored facts and concepts, often retrieved through RAG.</li>
+      <li><strong>Episodic memory:</strong> records of prior interactions, decisions, events, and attempts.</li>
+      <li><strong>Procedural memory:</strong> reusable methods and policies that skills can encode.</li>
     </ul>
   </div>
 </div>
 
-<div class="callout" style="margin-top: 30px;">Skills are the agent memory you can review, version, test, and share.</div>
+<div class="callout" style="margin-top: 30px;">Skills make procedural knowledge reviewable, versionable, testable, and shareable.</div>
 
 <!--
 Speaker notes:
-This taxonomy is a useful teaching model, not a claim that every product exposes memory with these exact labels. The key point is that skills are procedural memory: they preserve steps, judgment, references, templates, and scripts.
+This taxonomy is a useful teaching model, not a claim that every product exposes memory with these exact labels. RAG is a retrieval mechanism rather than memory itself, and skills are one concrete way to externalize procedural knowledge such as steps, judgment, references, templates, and scripts.
 Source for hosted agent memory endpoints: Anthropic managed agents skills page mentions memory store endpoints and beta headers, https://platform.claude.com/docs/en/managed-agents/skills.
 -->
 
@@ -576,11 +576,11 @@ Archify viewer capabilities and delivery workflow: local Archify skill documenta
 
 <div class="section-label">Authoring</div>
 
-## Skill Creation Should Use Skills
+## Use Skills to Create Skills
 
 <div class="split wide-left">
   <div class="callout">
-    Agent platforms now include skill-building skills. Use them instead of hand-rolling <code>SKILL.md</code> files from scratch.
+    Prefer skill-building tools over starting from a blank <code>SKILL.md</code>. Manual authoring remains supported.
   </div>
   <div class="panel olive">
     <h3>Why it matters</h3>
@@ -601,6 +601,6 @@ Archify viewer capabilities and delivery workflow: local Archify skill documenta
 
 <!--
 Speaker notes:
-For this audience, make the recommendation strong: do not create skills by hand unless you are debugging the generated output. Codex has a skill-creator skill in this environment, and Claude Code can use skill and plugin workflows to scaffold reusable capabilities. Human review still matters.
-Sources: Claude Code plugin docs describe plugin and skill creation workflows. OpenAI model guidance references Codex skills such as OpenAI Docs being reusable in other coding agents.
+For this audience, make the recommendation strong but distinguish it from a requirement. Codex provides a built-in skill-creator, and Claude Code offers an official skill-creator plugin for authoring and evaluation. Both platforms still support manual SKILL.md authoring. Human review remains essential either way.
+Sources: OpenAI skill guide, https://learn.chatgpt.com/docs/build-skills. Claude Code skills and skill-creator evaluation workflow, https://code.claude.com/docs/en/skills.
 -->
